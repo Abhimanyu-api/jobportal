@@ -10,7 +10,7 @@ html {
 }
 
 body {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Roboto', sans-serif;'l'
   font-weight: normal;
   font-style: normal;
   padding: 0;
@@ -189,6 +189,10 @@ label.nav-item {
   box-sizing: border-box;
   display: inline-block;
   margin-bottom: 0;
+}
+header.navbar label.nav-item:hover,
+header.navbar label.nav-item:focus {
+  color: white;
 }
 ul.navbar-nav li.nav-item a {
   color: white !important;
@@ -404,21 +408,51 @@ span.title-span {
 }
 div.centerCandidate {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-start;
+  justify-content: stretch;
 }
 .candidatesApplied {
   font-family: 'Montserrat';
   font-style: normal;
-  padding: 15px;
+  padding: 20px;
   background-color: #002244;
   color: white;
   border-radius: 10px;
-  line-height: 0.75;
+  line-height: 1.4;
 }
 .candidatesApplied > label {
-  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
   font-weight: 700;
+}
+.candidate-count {
+  display: inline-flex;
+  min-width: 28px;
+  height: 28px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: #fb4f14;
+}
+.candidate-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.candidate-link {
+  display: block;
+  padding: 9px 12px;
+  border-radius: 6px;
+  background-color: rgba(255, 255, 255, 0.12);
+}
+.candidate-link:hover {
+  background-color: rgba(255, 255, 255, 0.22);
+}
+.no-candidates {
+  color: rgba(255, 255, 255, 0.8);
 }
 
 mr-1 {

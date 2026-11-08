@@ -39,13 +39,14 @@ public class JobSeekerApplyController {
 
     @GetMapping("job-details-apply/{id}")
     public String display(@PathVariable("id") int id, Model model){
+        model.addAttribute("applyList", List.of());
         JobPostActivity jobDetails = jobPostActivityService.getOne(id);
         List<JobSeekerApply> jobSeekerApplyList = jobSeekerApplyService.getJobCandidates(jobDetails);
         List<JobSeekerSave> jobSeekerSaveList = jobSeekerSaveService.getJobCandidates(jobDetails);
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!(authentication instanceof AnonymousAuthenticationToken)){
-            if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("Recuiter"))){
+            if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("Recruiter"))){
                 RecruiterProfile user = recruiterProfileService.getCurrentRecruiterProfile();
                 if (user != null){
                     model.addAttribute("applyList", jobSeekerApplyList);

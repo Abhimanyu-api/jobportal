@@ -2,10 +2,14 @@ package com.luv2code.jobportal.services;
 
 import com.luv2code.jobportal.entity.*;
 import com.luv2code.jobportal.repository.JobPostActivityRepository;
+import com.luv2code.jobportal.repository.JobSeekerApplyRepository;
+import com.luv2code.jobportal.repository.JobSeekerSaveRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -14,10 +18,16 @@ import java.util.Objects;
 public class JobPostActivityService {
 
     private final JobPostActivityRepository jobPostActivityRepository;
+    private final JobSeekerApplyRepository jobSeekerApplyRepository;
+    private final JobSeekerSaveRepository jobSeekerSaveRepository;
 
     @Autowired
-    public JobPostActivityService(JobPostActivityRepository jobPostActivityRepository) {
+    public JobPostActivityService(JobPostActivityRepository jobPostActivityRepository,
+                                  JobSeekerApplyRepository jobSeekerApplyRepository,
+                                  JobSeekerSaveRepository jobSeekerSaveRepository) {
         this.jobPostActivityRepository = jobPostActivityRepository;
+        this.jobSeekerApplyRepository = jobSeekerApplyRepository;
+        this.jobSeekerSaveRepository = jobSeekerSaveRepository;
     }
 
     public JobPostActivity addNew(JobPostActivity jobPostActivity){
@@ -42,12 +52,22 @@ public class JobPostActivityService {
         return jobPostActivityRepository.findById(id).orElseThrow(()->new RuntimeException("Job not found"));
     }
 
+    @Transactional
+    public void delete(int id) {
+        JobPostActivity job = getOne(id);
+        jobSeekerApplyRepository.deleteAllByJob(job);
+        jobSeekerSaveRepository.deleteAllByJob(job);
+        jobPostActivityRepository.deleteById(id);
+    }
+
     public List<JobPostActivity> getAll() {
         return jobPostActivityRepository.findAll();
     }
 
     public List<JobPostActivity> search(String job, String location, List<String> type, List<String> remote, LocalDate searchDate) {
-        return Objects.isNull(searchDate) ? jobPostActivityRepository.searchWithoutDate(job, location, remote, type) :
-                jobPostActivityRepository.search(job, location, remote, type, searchDate);
+        java.util.Date date = Objects.isNull(searchDate) ? null :
+                java.util.Date.from(searchDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        return jobPostActivityRepository.search(
+                job, location, remote, type.stream().map(String::toLowerCase).toList(), date);
     }
 }

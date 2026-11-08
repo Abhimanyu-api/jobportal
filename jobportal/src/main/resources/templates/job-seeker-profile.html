@@ -230,6 +230,7 @@
                                         type="file"
                                         name="pdf"
                                         class="form-control"
+                                        id="resumeFile"
                                         required="true"
                                         accept="application/pdf"
                                 />
@@ -259,6 +260,18 @@
         </div>
     </div>
 </div>
+<div class="toast-container position-fixed top-0 end-0 p-3">
+    <div id="resumeSizeToast" class="toast text-bg-danger border-0" role="alert" aria-live="assertive"
+         aria-atomic="true" data-bs-delay="5000">
+        <div class="d-flex">
+            <div class="toast-body">
+                <strong>File Size is Large.</strong> Please select a resume no larger than 5 MB.
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                    aria-label="Close"></button>
+        </div>
+    </div>
+</div>
 <div sec:authorize="hasAuthority('Recruiter')">
 
 </div>
@@ -282,8 +295,30 @@
    $("select").prop( "disabled", true );
        $("button").prop( "disabled", true );
 </script>
-<script>
+<script sec:authorize="hasAuthority('Job Seeker')">
+    const maxResumeSizeBytes = 5 * 1024 * 1024;
+    const resumeInput = document.getElementById("resumeFile");
+    const resumeForm = resumeInput.closest("form");
+    const resumeSizeToast = bootstrap.Toast.getOrCreateInstance(
+        document.getElementById("resumeSizeToast")
+    );
 
+    function hasOversizedResume() {
+        return resumeInput.files.length > 0 && resumeInput.files[0].size > maxResumeSizeBytes;
+    }
+
+    resumeInput.addEventListener("change", function () {
+        if (hasOversizedResume()) {
+            resumeSizeToast.show();
+        }
+    });
+
+    resumeForm.addEventListener("submit", function (event) {
+        if (hasOversizedResume()) {
+            event.preventDefault();
+            resumeSizeToast.show();
+        }
+    });
 
     var counter = 0;
      $(document).on("click", "#addSkill", function (e) {

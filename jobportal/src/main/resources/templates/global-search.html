@@ -79,7 +79,7 @@
                                     th:checked="${partTime}"
                                     id="part-time"
                                     name="partTime"
-                                    th:value="Part-Time"
+                                    th:value="Part-time"
                             />
                             <label class="form-check-label" for="part-time">
                                 Part-Time
@@ -92,7 +92,7 @@
                                     id="full-time"
                                     th:checked="${fullTime}"
                                     name="fullTime"
-                                    th:value="Full-Time"
+                                    th:value="Full-time"
                             />
                             <label class="form-check-label" for="full-time">
                                 Full-Time
@@ -102,7 +102,6 @@
                             <input
                                     class="form-check-input"
                                     type="checkbox"
-                                    value=""
                                     id="freelance"
                                     th:value="Freelance"
                                     name="freelance"
@@ -110,6 +109,19 @@
                             />
                             <label class="form-check-label" for="freelance">
                                 Freelance
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    id="internship"
+                                    th:value="Internship"
+                                    name="internship"
+                                    th:checked="${internship}"
+                            />
+                            <label class="form-check-label" for="internship">
+                                Internship
                             </label>
                         </div>
                     </div>
@@ -265,12 +277,18 @@
 <script type="text/javascript" th:src="@{/js/main.js}"></script>
 
 <script>
+    const filterForm = document.getElementById("myForm");
+    const updateSearchFields = function () {
+        document.getElementById("hidJob").value = document.getElementById("job").value;
+        document.getElementById("hidLoc").value = document.getElementById("loc").value;
+    };
 
-    $('#job').change(function() {
-      $('#hidJob').val($(this).val());
-    });
-    $('#loc').change(function() {
-      $('#hidLoc').val($(this).val());
+    filterForm.addEventListener("submit", updateSearchFields);
+    filterForm.addEventListener("change", function (event) {
+        if (event.target.matches('input[type="checkbox"]')) {
+            updateSearchFields();
+            filterForm.requestSubmit();
+        }
     });
 </script>
 </body>

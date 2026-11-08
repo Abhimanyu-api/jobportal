@@ -137,19 +137,27 @@
 
             <div class="px-3 mb-3" sec:authorize="hasAuthority('Recruiter')">
                 <div class="row">
-                    <div class="col-md-9">
+                    <div class="col-lg-8">
                         <label class="large-label "> Job Description </label>
                         <div th:utext="${jobDetails.descriptionOfJob}"></div>
                     </div>
-                    <div class="col-md-3 centerCandidate">
-                        <div class="candidatesApplied">
-                            <label>Candidates Applied for Job</label>
-                            <th:block th:each="applyList:${applyList}">
-                                <a th:href="@{/job-seeker-profile/{id}(id=${applyList.userId.userAccountId})}"
-                                   class="white"
-                                   th:text="${applyList.userId.firstName+', '+applyList.userId.lastName}">FirstName,
+                    <div class="col-lg-4 centerCandidate">
+                        <div class="candidatesApplied w-100">
+                            <label>
+                                Candidates Applied
+                                <span class="candidate-count" th:text="${#lists.size(applyList)}">0</span>
+                            </label>
+                            <div class="candidate-list" th:if="${not #lists.isEmpty(applyList)}">
+                                <th:block th:each="jobApplication : ${applyList}">
+                                <a th:href="@{/job-seeker-profile/{id}(id=${jobApplication.userId.userAccountId})}"
+                                   class="white candidate-link"
+                                   th:text="${jobApplication.userId.firstName + ' ' + jobApplication.userId.lastName}">FirstName
                                     LastName</a>
-                            </th:block>
+                                </th:block>
+                            </div>
+                            <p class="no-candidates mb-0" th:if="${#lists.isEmpty(applyList)}">
+                                No candidates have applied yet.
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -190,7 +198,8 @@
                         </form>
                     </div>
                     <div class="col-md-3">
-                        <form th:action="@{/dashboard/deleteJob/{id}(id=${jobDetails.jobPostId})}" method="post">
+                        <form th:action="@{/dashboard/deleteJob/{id}(id=${jobDetails.jobPostId})}" method="post"
+                              onsubmit="return confirm('Are you sure you want to delete this job? This action cannot be undone.');">
                             <button class="btn-sec btn-black w-100" type="submit">Delete Job</button>
                         </form>
                     </div>

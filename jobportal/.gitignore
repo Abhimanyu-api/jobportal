@@ -31,3 +31,16 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Environment secrets ###
+.env
+.env.*
+
+### Uploaded user photos ###
+/photos/
+
+### Local configuration secrets ###
+
+
+
+/src/main/resources/application-local.properties

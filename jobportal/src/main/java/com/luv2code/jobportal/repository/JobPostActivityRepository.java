@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 public interface JobPostActivityRepository extends JpaRepository<JobPostActivity,Integer> {
@@ -23,31 +23,16 @@ public interface JobPostActivityRepository extends JpaRepository<JobPostActivity
 
     List<IRecruiterJobs> getRecruiterJobs(@Param("recruiter") int recruiter);
 
-    @Query(value = "SELECT * FROM job_post_activity j INNER JOIN job_location l on j.job_location_id=l.id WHERE j" +
-            ".job_title LIKE %:JOB%" +
-            " AND (l.city LIKE %:location%" +
-            " OR l.country LIKE %:location%" +
-            " OR l.state LIKE %:location%" +
-            " AND (j.job_type IN(:type))" +
-            "AND (j.remote IN(:remote))", nativeQuery = true)
-
-    List<JobPostActivity> searchWithoutDate(@Param("job") String job,
-                                            @Param("location") String location,
-                                            @Param("remote") List<String> remote,
-                                            @Param("type") List<String> type);
-
-    @Query(value = "SELECT * FROM job_post_activity j INNER JOIN job_location l on j.job_location_id=l.id WHERE j" +
-            ".job_title LIKE %:JOB%" +
-            " AND (l.city LIKE %:location%" +
-            " OR l.country LIKE %:location%" +
-            " OR l.state LIKE %:location%" +
-            " AND (j.job_type IN(:type))" +
-            "AND (j.remote IN(:remote))" +
-            " AND (Posted_date >= :date)", nativeQuery = true)
-
+    @Query("SELECT j FROM JobPostActivity j WHERE " +
+            "(:job IS NULL OR LOWER(j.jobTitle) LIKE LOWER(CONCAT('%', :job, '%'))) AND " +
+            "(:location IS NULL OR LOWER(j.jobLocationId.city) LIKE LOWER(CONCAT('%', :location, '%')) OR " +
+            "LOWER(j.jobLocationId.state) LIKE LOWER(CONCAT('%', :location, '%')) OR " +
+            "LOWER(j.jobLocationId.country) LIKE LOWER(CONCAT('%', :location, '%'))) AND " +
+            "LOWER(j.jobType) IN :type AND j.remote IN :remote AND " +
+            "(:date IS NULL OR j.postedDate >= :date)")
     List<JobPostActivity> search(@Param("job") String job,
                                  @Param("location") String location,
                                  @Param("remote") List<String> remote,
                                  @Param("type") List<String> type,
-                                 @Param("date") LocalDate date);
+                                 @Param("date") Date date);
 }
